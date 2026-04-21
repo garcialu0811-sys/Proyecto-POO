@@ -227,8 +227,8 @@ class PokemonElectrico(Pokemon):
         self.energia_actual -= costo_ep
         dano_base = 20
         mensaje_efectividad = ""
-
-        if random.random() < 0.2:
+        
+        if random.random() < 0.2: # 20% de probabilidad
             oponente.paralizado = True
             mensaje_efectividad = f"¡{oponente.nombre} ha quedado paralizado y perderá su próximo turno!"
             
