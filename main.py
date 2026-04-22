@@ -71,3 +71,83 @@ def ejecutar_turno(jugador, oponente, controlador=False):
     elif opcion_accion == 3:
         # Restaura puntos de energía (EP) sacrificando el turno
         print(jugador.descansar())
+        
+# Funcion principal 
+def iniciar_simulador():
+    # Encabezado visual del programa
+    print("="*40)
+    print(f'{" SIMULADOR DE BATALLAS POKÉMON (POO) ":^40}')
+    print("="*40)
+
+    # Selección del modo de juego inicial
+    modo_de_juego = ""
+    while modo_de_juego != "1" and modo_de_juego != "2":
+        print("Seleccione el Modo de Juego:")
+        print("1. Jugador vs Jugador")
+        print("2. Jugador vs Computadora")
+        modo_de_juego = input("> Opción: ")
+
+    # Configuración del primer combatiente
+    luchador_uno = seleccionar_pokemon("Jugador 1, elija el número de su Pokémon: ")
+    
+    # Configuración del segundo combatiente según el modo seleccionado
+    if modo_de_juego == "2":
+        print("\nComputadora eligiendo combatiente...")
+        
+        # Convertimos el diccionario a lista para obtener los IDs al azar
+        identificadores_disponibles = list(CATALOGO_POKEMON)
+        id_elegido_computadora = random.choice(identificadores_disponibles)
+        
+        # Extraemos los datos del rival elegido al azar
+        datos_rival = CATALOGO_POKEMON[id_elegido_computadora]
+        tipo_rival = datos_rival["tipo"]
+        nombre_rival = datos_rival["nombre"]
+        vida_rival = datos_rival["hp_maximo"]
+        energia_rival = datos_rival["energia_maxima"]
+
+        # Instanciación según el tipo para la computadora
+        if tipo_rival == "Fuego":
+            luchador_dos = PokemonFuego(nombre_rival, vida_rival, energia_rival)
+        elif tipo_rival == "Agua":
+            luchador_dos = PokemonAgua(nombre_rival, vida_rival, energia_rival)
+        elif tipo_rival == "Planta":
+            luchador_dos = PokemonPlanta(nombre_rival, vida_rival, energia_rival)
+        else:
+            luchador_dos = PokemonElectrico(nombre_rival, vida_rival, energia_rival)
+        
+        print("¡La computadora ha seleccionado a " + luchador_dos.nombre + "!")
+    else:
+        luchador_dos = seleccionar_pokemon("Jugador 2, elija el número de su Pokémon: ")
+
+    print("\n¡COMIENZA LA BATALLA!")
+    print(luchador_uno.nombre + " (" + luchador_uno.tipo + ") vs " + luchador_dos.nombre + " (" + luchador_dos.tipo + ")")
+
+    # Ciclo principal de combate por turnos
+    turno_del_primero = True
+    
+    # El combate sigue mientras ambos esten vivos segun su HP
+    while luchador_uno.esta_vivo() and luchador_dos.esta_vivo():
+        if turno_del_primero:
+            ejecutar_turno(luchador_uno, luchador_dos)
+        else:
+            # Si es modo 2, el segundo turno es controlado por el sistema automatico
+            es_computadora = False
+            if modo_de_juego == "2":
+                es_computadora = True
+            
+            ejecutar_turno(luchador_dos, luchador_uno, es_computadora)
+        
+        # Alterna el turno entre los combatientes
+        turno_del_primero = not turno_del_primero
+
+    # Declaración del ganador una vez que alguien se queda sin vida
+    print("\n" + "*"*30)
+    if luchador_uno.esta_vivo():
+        print("\n¡EL GANADOR ES " + luchador_uno.nombre + "!")
+    else:
+        print("n¡EL GANADOR ES " + luchador_dos.nombre + "!")
+    print("*"*30)
+
+# Punto de entrada principal para ejecutar el script
+if __name__ == "__main__":
+    iniciar_simulador()
