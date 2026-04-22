@@ -38,3 +38,36 @@ def seleccionar_pokemon(mensaje_instruccion):
             print("Error: Ingrese un número válido.")      
         except Exception as error:
             print(f"Error en la selección: {error}")
+
+def ejecutar_turno(jugador, oponente, controlador=False):
+    print("\nTURNO DE: " + jugador.nombre) 
+    print("[HP: " + str(jugador.hp_actual) + "/" + str(jugador.hp_maximo) + "] | [EP: " + str(jugador.energia_actual) + "/" + str(jugador.energia_maxima) + "]")
+
+    # Determina si la acción la toma un jugador o la computadora (Modo PvE)
+    if controlador:
+        opcion_accion = random.randint(1, 3) 
+        print(f"La computadora elige: {opcion_accion}")
+    else:
+        # Bucle de validación para el turno del jugador
+        while True:
+            try:
+                print("¿Qué acción deseas realizar?")
+                print("1. Atacar (Costo: 15 EP)\n2. Defender (Costo: 5 EP)\n3. Descansar (Restaura: 20 EP)")
+                opcion_accion = int(input("> Opción: "))
+                if opcion_accion in [1, 2, 3]:
+                    break
+                print("Opción no válida.")
+            except ValueError:
+                # Evita que el programa colapse si se ingresan letras o símbolos
+                print("Error: Debe ingresar un número entero.")
+
+    # Ejecutamos los métodos que definisnos en a clase base y la que fue sobrescrita en las hijas
+    if opcion_accion == 1:
+        mensaje_resultado, dano = jugador.atacar(oponente)
+        print(mensaje_resultado)
+    elif opcion_accion == 2:
+        # Activa el estado de defensa para reducir el daño entrante
+        print(jugador.defender())
+    elif opcion_accion == 3:
+        # Restaura puntos de energía (EP) sacrificando el turno
+        print(jugador.descansar())
